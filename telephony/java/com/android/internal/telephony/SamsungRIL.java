@@ -296,22 +296,25 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
             Log.v(LOG_TAG, "Emergency dial: " + address);
             rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
             rr.mp.writeString(address + "/");
+            rr.mp.writeInt(clirMode);
+            rr.mp.writeInt(0);
+            rr.mp.writeInt(0);
         }
         else {
             rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
             rr.mp.writeString(address);
-        }
 
-        rr.mp.writeInt(clirMode);
-        rr.mp.writeInt(0); // UUS information is absent
-
-        if (uusInfo == null) {
-            rr.mp.writeInt(0); // UUS information is absent
-        } else {
-            rr.mp.writeInt(1); // UUS information is present
-            rr.mp.writeInt(uusInfo.getType());
-            rr.mp.writeInt(uusInfo.getDcs());
-            rr.mp.writeByteArray(uusInfo.getUserData());
+            rr.mp.writeInt(clirMode);
+            rr.mp.writeInt(0);
+            
+            if (uusInfo == null) {
+                rr.mp.writeInt(0); // UUS information is absent
+            } else {
+                rr.mp.writeInt(1); // UUS information is present
+                rr.mp.writeInt(uusInfo.getType());
+                rr.mp.writeInt(uusInfo.getDcs());
+                rr.mp.writeByteArray(uusInfo.getUserData());
+            }
         }
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
