@@ -50,8 +50,10 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
 
 //SAMSUNG SGS STATES
     static final int RIL_UNSOL_STK_SEND_SMS_RESULT = 11002;
+    static final int RIL_UNSOL_STK_CALL_CONTROL_RESULT = 11003;
     static final int RIL_UNSOL_O2_HOME_ZONE_INFO = 11007;
     static final int RIL_UNSOL_DEVICE_READY_NOTI = 11008;
+    static final int RIL_UNSOL_SAMSUNG_GPS_UNKNOWN_MAGIC_REQUEST = 11009;
     static final int RIL_UNSOL_SAMSUNG_UNKNOWN_MAGIC_REQUEST_2 = 11011;
     static final int RIL_UNSOL_HSDPA_STATE_CHANGED = 11016;
     static final int RIL_UNSOL_SAMSUNG_UNKNOWN_MAGIC_REQUEST = 11012;
@@ -234,6 +236,7 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
             case RIL_REQUEST_GET_SMSC_ADDRESS: ret = responseString(p); break;
             case RIL_REQUEST_SET_SMSC_ADDRESS: ret = responseVoid(p); break;
             case RIL_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE: ret = responseVoid(p); break;
+            case RIL_REQUEST_DIAL_EMERGENCY: ret = responseInts(p); break;
             case RIL_REQUEST_REPORT_SMS_MEMORY_STATUS: ret = responseVoid(p); break;
             case RIL_REQUEST_REPORT_STK_SERVICE_IS_RUNNING: ret = responseVoid(p); break;
             default:
@@ -294,8 +297,10 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
         RILRequest rr;
         if (PhoneNumberUtils.isEmergencyNumber(address)) {
             Log.v(LOG_TAG, "Emergency dial: " + address);
-            rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
-            rr.mp.writeString(address + "/");
+            //rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
+            //rr.mp.writeString(address + "/");
+            rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
+            rr.mp.writeString(address);
             rr.mp.writeInt(clirMode);
             rr.mp.writeInt(0);
             rr.mp.writeInt(0);
@@ -375,9 +380,10 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
 	            case RIL_UNSOL_O2_HOME_ZONE_INFO: ret = responseVoid(p); break;
 	            case RIL_UNSOL_SAMSUNG_UNKNOWN_MAGIC_REQUEST: ret = responseVoid(p); break;
 	            case RIL_UNSOL_STK_SEND_SMS_RESULT: ret = responseVoid(p); break;
+	            case RIL_UNSOL_STK_CALL_CONTROL_RESULT: ret = responseVoid(p); break;
 	            case RIL_UNSOL_DEVICE_READY_NOTI: ret = responseVoid(p); break;
 	            case RIL_UNSOL_SAMSUNG_UNKNOWN_MAGIC_REQUEST_2: ret = responseVoid(p); break;
-
+                case RIL_UNSOL_SAMSUNG_GPS_UNKNOWN_MAGIC_REQUEST: ret = responseVoid(p); break;
 	            default:
 	                throw new RuntimeException("Unrecognized unsol response: " + response);
 	            //break; (implied)
@@ -560,6 +566,12 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
 	                }
 	                break;
 
+                    /*
+                case RIL_UNSOL_STK_CALL_CONTROL_RESULT:
+                    mStkCallControlResultRegistrant.notifyRegistrant(
+                        new AsyncResult (null, ret, null));
+                    break;
+                    */
 	            case RIL_UNSOL_SIM_SMS_STORAGE_FULL:
 	                if (RILJ_LOGD) unsljLog(response);
 
