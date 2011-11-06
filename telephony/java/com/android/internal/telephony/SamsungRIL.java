@@ -297,11 +297,10 @@ public SamsungRIL(Context context, int networkMode, int cdmaSubscription) {
         RILRequest rr;
         if (PhoneNumberUtils.isEmergencyNumber(address)) {
             Log.v(LOG_TAG, "Emergency dial: " + address);
-            //rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
-            //rr.mp.writeString(address + "/");
-            rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
-            rr.mp.writeString(address);
-            rr.mp.writeInt(clirMode);
+            rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
+            rr.mp.writeString(address + "/");
+            //rr.mp.writeInt(clirMode);
+            rr.mp.writeInt(10); // 0010?
             rr.mp.writeInt(0);
             rr.mp.writeInt(0);
         }
